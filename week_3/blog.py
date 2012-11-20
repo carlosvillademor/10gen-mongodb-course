@@ -36,6 +36,7 @@ def insert_entry(title, post, tags_array, author):
     try:
         # XXX HW 3.2 Work here
         # do something with the post
+        posts.save(post)
 
         print "Inserting the post"
 
@@ -59,7 +60,7 @@ def blog_index():
     # XXX HW 3.2 Work Here
     # Find the last ten most recent posts, sorted from newest to oldest
 
-    cursor = [] # so this code won't crash before you add your stuff - you can remove
+    cursor = posts.find().sort('date',pymongo.DESCENDING)
        
     
     # End Student Work
@@ -101,7 +102,7 @@ def show_post(permalink="notfound"):
     # XXX HW 3.2 Work here
     # find a post that has the appropriate permalink
     
-    post = None
+    post = posts.find_one({'permalink':permalink})
 
     # end student work
     if post == None:
@@ -139,7 +140,7 @@ def post_newcomment():
     permalink = cgi.escape(permalink)
 
     # XXX HW 3.3 - Find the post that matches the permalink.
-    post = None  # Replace this line with your work.
+    post = posts.find_one({'permalink':permalink})
 
     # if post not found, redirct to post not found error
     if post == None:
@@ -176,9 +177,10 @@ def post_newcomment():
             # Work here.
             # You will need to update the blog post and add the comment onto the comment array. make sure
             # you only update one document here by updating the one with the right permalink.
-            
+            posts.update({'permalink':permalink}, {'$push':{'comments': comment}})
+
             # your update here.
-            print "about to update a blog post with a comment"
+            print "about to update a blog post with a comment", comment
             
             #print "num documents updated" + last_error['n']
         except:
